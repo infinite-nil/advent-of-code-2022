@@ -2,31 +2,30 @@ use std::fs;
 
 fn main() {
     let input = fs::read_to_string("./input.txt").unwrap();
-    let list = input.split("\n");
+    let list = input.split("\n").map(|item| {
+        if item == "" {
+            return -1;
+        }
 
-    let mut prev_calories = 0;
-    let mut current_calories = 0;
-    let mut highest_calories = 0;
+        return item.parse::<i32>().unwrap();
+    });
+
+    let mut sum_list: Vec<i32> = vec![];
+    let mut current_sum: i32 = 0;
 
     list.for_each(|item| {
-        let current_is_greater = current_calories > prev_calories;
-
-        if item != "" {
-            let value = item.parse::<i32>().unwrap();
-
-            current_calories += value;
-
-            if current_is_greater {
-                highest_calories = current_calories;
-            }
+        if item == -1 {
+            sum_list.push(current_sum);
+            current_sum = 0;
         } else {
-            if current_is_greater {
-                prev_calories = current_calories;
-            }
-
-            current_calories = 0;
+            current_sum += item;
         }
     });
 
-    println!("{}", highest_calories);
+    sum_list.sort();
+
+    let max = sum_list.last();
+    let max_three: i32 = sum_list.split_at(sum_list.len() - 3).1.iter().sum();
+
+    println!("{:?} - {:?}", max, max_three);
 }
